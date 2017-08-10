@@ -101,14 +101,14 @@ class System(object):
     @staticmethod
     def set_wifi(target, on=True):
         """
-        Set mobile data connectivity
+        Set wifi connectivity
         """
         System._set_svc(target, 'wifi', on)
 
     @staticmethod
     def set_nfc(target, on=True):
         """
-        Set mobile data connectivity
+        Set nfc connectivity
         """
         System._set_svc(target, 'nfc', on)
 
