@@ -75,16 +75,8 @@ class System(object):
         """
         Set airplane mode
         """
-        ap_mode = 1 if on else 0
-        ap_state = 'true' if on else 'false'
-
         try:
-            target.execute('settings put global airplane_mode_on {}'\
-                           .format(ap_mode), as_root=True)
-            target.execute('am broadcast '\
-                           '-a android.intent.action.AIRPLANE_MODE '\
-                           '--ez state {}'\
-                           .format(ap_state), as_root=True)
+            target.set_airplane_mode(on)
         except TargetError:
             log = logging.getLogger('System')
             log.warning('Failed to toggle airplane mode, permission denied.')

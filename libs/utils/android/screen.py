@@ -44,24 +44,12 @@ class Screen(object):
             log.info('Set orientation: AUTO')
 
         if acc_mode == 0:
-            target.execute('content insert '\
-                           '--uri content://settings/system '\
-                           '--bind name:s:accelerometer_rotation '\
-                           '--bind value:i:{}'.format(acc_mode))
-            target.execute('content insert '\
-                           '--uri content://settings/system '\
-                           '--bind name:s:user_rotation '\
-                           '--bind value:i:{}'.format(usr_mode))
+            target.set_auto_rotation(acc_mode)
+            target.set_rotation(usr_mode)
         else:
             # Force PORTRAIT mode when activation AUTO rotation
-            target.execute('content insert '\
-                           '--uri content://settings/system '\
-                           '--bind name:s:user_rotation '\
-                           '--bind value:i:{}'.format(usr_mode))
-            target.execute('content insert '\
-                           '--uri content://settings/system '\
-                           '--bind name:s:accelerometer_rotation '\
-                           '--bind value:i:{}'.format(acc_mode))
+            target.set_rotation(usr_mode)
+            target.set_auto_rotation(acc_mode)
 
     @staticmethod
     def set_brightness(target, auto=True, percent=None):
@@ -73,20 +61,14 @@ class Screen(object):
         # Force manual brightness if a percent specified
         if percent:
             bri_mode = 0
-        target.execute('content insert '\
-                       '--uri content://settings/system '\
-                       '--bind name:s:screen_brightness_mode '\
-                       '--bind value:i:{}'.format(bri_mode))
+        target.set_auto_brightness(bri_mode)
         if bri_mode == 0:
             if percent<0 or percent>100:
                 msg = "Screen brightness {} out of range (0,100)"\
                       .format(percent)
                 raise ValueError(msg)
             value = 255 * percent / 100
-            target.execute('content insert '\
-                           '--uri content://settings/system '\
-                           '--bind name:s:screen_brightness '\
-                           '--bind value:i:{}'.format(value))
+            target.set_brightness(value)
             log.info('Set brightness: %d%%', percent)
         else:
             log.info('Set brightness: AUTO')
@@ -150,9 +132,8 @@ class Screen(object):
 
     @staticmethod
     def unlock(target):
-       Screen.set_screen(target, on=True)
-       sleep(1)
-       System.menu(target)
-       System.home(target)
+        Screen.set_screen(target, on=True)
+        sleep(1)
+        target.swipe_to_unlock()
 
 # vim :set tabstop=4 shiftwidth=4 expandtab
